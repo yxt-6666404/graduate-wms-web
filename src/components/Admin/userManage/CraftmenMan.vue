@@ -18,7 +18,7 @@
 
       <el-button type="primary" @click="loadCraftmenPostlistPageC1" style="margin-left: 5px;" size="small">确定</el-button>
       <el-button type="warning" @click="resetList" style="margin-left: 5px;" size="small">重置</el-button>
-      <el-button @click="clearFilter" size="small">清除所有过滤器</el-button>
+      <el-button @click="clearFilter" size="small" style="margin-left: 550px;">清除所有过滤器</el-button>
 
       <!-- <el-button type="warning" @click="addRecord" style="margin-left: 5px;" size="small">新增</el-button> -->
     </div>
@@ -99,7 +99,7 @@
       </el-pagination>
     </div>
 
-      <el-dialog title="新增手工艺人" :visible.sync="dialogFormVisible" style="height: 95vh; overflow: hidden" width="55%" center  >
+      <el-dialog title="手工艺人详情" :visible.sync="dialogFormVisible" style="height: 95vh; overflow: hidden" width="55%" center  >
         <el-form :model="form" style="overflow-y: auto; height: 50vh;width: 50vw;">
           <el-form-item label="手工艺人名称" :label-width="formLabelWidth" required>
             <el-col :span="12">

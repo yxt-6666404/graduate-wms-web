@@ -3,21 +3,21 @@
   <div style="height: 100%;">
     <div style="margin-bottom: 5px;margin-left: 5px; height: 6%">
       <el-input type="text" autofocus="true" placeholder="请输流派类别名称" v-model="categoryName" class="input-with-select" style="width: 200px" suffix-icon="el-icon-search" clearable size="small" 
-      @keyup.enter.native="loadCraftmenPostlistPageC1"></el-input>
+      @keyup.enter.native="loadPostlistPageC1"></el-input>
 
-      <el-button type="primary" @click="loadCraftmenPostlistPageC1" style="margin-left: 5px;" size="small">确定</el-button>
+      <el-button type="primary" @click="loadPostlistPageC1" style="margin-left: 5px;" size="small">确定</el-button>
       <el-button type="warning" @click="resetList" style="margin-left: 5px;" size="small">重置</el-button>
-      <el-button @click="clearFilter" size="small">清除所有过滤器</el-button>
 
-      <!-- <el-button type="warning" @click="addRecord" style="margin-left: 5px;" size="small">新增</el-button> -->
+      <el-button class="add" @click="addRecord" size="small">新增刺绣流派</el-button>
+      <el-button @click="clearFilter" size="small">清除所有过滤器</el-button>
     </div>
 
     <el-table
       ref="multipleTable"
       :data="tableData"
-      style="width: 100vw;" height="524"
+      style="width: 100vw;" height="492"
       :row-key="getRowKeys"
-      border
+      border lazy
       default-expand-all
       :header-cell-style="{background:'#eef1f6',color:'#606266'}" 
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
@@ -31,7 +31,7 @@
         width="160">
       </el-table-column>
       <el-table-column
-        prop="SS"
+        prop="categoryName"
         label="刺绣流派类别名称"
         width="140">
       </el-table-column>
@@ -50,7 +50,7 @@
       <el-table-column
         width="120" align="center"
         sortable
-        :filters="[{text:1, value:1}, {text:2, value:2}, {text:3, value:3}]"  :filter-method="filterHandler"
+        :filters="[{text:1, value:1}, {text:2, value:2}, {text:3, value:3}]"  :filter-method="filterLevel"
         column-key="level"
         prop="level"
         label="类别等级">
@@ -91,7 +91,80 @@
       </template>
       </el-table-column>
     </el-table>
+
+
+    <el-dialog title="刺绣流派详情" :visible.sync="dialogFormVisible1" style="height: 95vh; overflow: hidden" width="55%" center  >
+        <el-form :model="form1" style="overflow-y: auto; height: 50vh;width: 50vw;">
+          <el-form-item label="刺绣流派类别编码" :label-width="formLabelWidth" required>
+            <el-col :span="8">
+              <el-input v-model="form1.categoryId" autocomplete="true"></el-input>
+            </el-col>
+          </el-form-item>
+          <el-form-item label="刺绣流派类别名称" :label-width="formLabelWidth" required>
+            <el-col :span="8">
+              <el-input v-model="form1.categoryName"></el-input>
+            </el-col>
+          </el-form-item>                    
+          <el-form-item label="父节点编码" :label-width="formLabelWidth" required>
+            <el-col :span="12" required>
+             <el-input v-model="form1.parentnodeId" ></el-input>
+            </el-col>
+          </el-form-item>  
+          <el-form-item label="祖先类别" :label-width="formLabelWidth" required>
+            <el-col :span="8" required>
+             <el-input v-model="form1.ancester" ></el-input>
+            </el-col>
+          </el-form-item>  
+          <el-form-item label="类别等级" :label-width="formLabelWidth">
+            <el-col :span="8">
+             <el-input v-model="form1.level" ></el-input>
+            </el-col>
+          </el-form-item>
+          <el-form-item label="是否为父类别标志" :label-width="formLabelWidth" required >
+            <el-col :span="8">
+            <el-input v-model="form1.isparentflag" ></el-input>
+          </el-col>
+          </el-form-item>
+          <el-form-item label="简介" :label-width="formLabelWidth">
+          <el-col :span="20">
+            <el-input v-model="form1.note" type="textarea" rows="3"></el-input>
+          </el-col>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible1 = false">取 消</el-button>
+          <el-button type="primary" @click="newSave1">确 定</el-button>
+        </div>
+      </el-dialog>
+
+      <el-dialog title="刺绣流派详情" :visible.sync="dialogFormVisible2" style="height: 95vh; overflow: hidden" width="55%" center  >
+        <el-form :model="form2" style="overflow-y: auto; height: 50vh;width: 50vw;">
+          <el-form-item label="刺绣流派类别编码" :label-width="formLabelWidth" required>
+            <el-col :span="8">
+              <el-input v-model="form2.categoryId" autocomplete="true"></el-input>
+            </el-col>
+          </el-form-item>
+          <el-form-item label="刺绣流派类别名称" :label-width="formLabelWidth" required>
+            <el-col :span="8">
+              <el-input v-model="form2.categoryName"></el-input>
+            </el-col>
+          </el-form-item>                    
+          <el-form-item label="简介" :label-width="formLabelWidth">
+          <el-col :span="20">
+            <el-input v-model="form2.note" type="textarea" rows="3"></el-input>
+          </el-col>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible2 = false">取 消</el-button>
+          <el-button type="primary" @click="newSave2">确 定</el-button>
+        </div>
+      </el-dialog>
+
+
   </div>
+
+
 </template>
 
 <script>
@@ -99,19 +172,25 @@ export default {
   name: 'EmCateforyMainMan',
   data () {
     return {
-       tableData: [],
-       categoryName:'',
-              dialogFormVisible: false,
-        form: {
-          categoryId: '',
-          categoryName: '',
-          note: '',
-          parentnodeId: '',
-          level: '',
-          isparentflag: '',
-          ancestors: '',
-        },
-        formLabelWidth: '120px',
+      tableData: [],
+      categoryName:'',
+      dialogFormVisible1: false,
+      dialogFormVisible2: false,
+      form1: {
+        categoryId: '',
+        categoryName: '',
+        note: '',
+        parentnodeId: '',
+        level: '',
+        isparentflag: '',
+        ancestors: '',
+      },
+      form2: {
+        categoryId: '',
+        categoryName: '',
+        note: '',
+      },
+        formLabelWidth: '140px',
     }
   },
   created() {
@@ -125,7 +204,7 @@ export default {
         return row[property] === value;
       },
     filterLevel(value, row) {
-        console.log("filterLevel",value, row,row.level=== value);
+        console.log("filterLevel",value, row,row.level,row.level=== value);
         return row.level === value;
     },
     filteIsParentflag(value, row) {
@@ -151,6 +230,10 @@ export default {
           
         })
     },
+    resetList() {
+      this.categoryName = '';
+      this.loadPostlistPageC1();
+    },
     handleCurrentChange(val) {//选中一行
       console.log("handleCurrentChange",val);
       this.currentRow = val;
@@ -160,6 +243,8 @@ export default {
         this.multipleSelection = val;
     },
     handleEdit(index, row) {
+      this.form1=row;
+      this.dialogFormVisible1 = true;
       console.log(index, row);
     },
     handleDelete(index, row) {
@@ -174,6 +259,50 @@ export default {
         }
       })
     },
+    newSave1(){
+      console.log('newSave1',this.form1);
+        this.dialogFormVisible1 = false;
+        this.$axios.post(this.$httpUrl + '/embroidery-category/saveOrMod', this.form1).then(res => {
+        console.log(res);
+        if (res.status == "200") {
+          alert("修改成功");
+          this.loadPostlistPageC1();
+        } else {
+          alert("修改失败");
+        }
+        })
+        .catch((error) => {
+          console.log('请求出错:', error);
+          if (error.response && error.response.status === 400) {
+            // 这里可以根据具体的400错误情况进行更详细的处理
+            console.log('400错误:', error.response.data);
+          }
+        });
+    },
+    addRecord(){
+        this.dialogFormVisible2 = true;
+    },
+    newSave2(){
+      console.log('newSave2',this.form2);
+        this.dialogFormVisible2 = false;
+        this.$axios.post(this.$httpUrl + '/embroidery-category/saveOrMod', this.form2).then(res => {
+        console.log(res);
+        if (res.status == "200") {
+          alert("修改成功");
+          this.loadPostlistPageC1();
+        } else {
+          alert("修改失败");
+        }
+        })
+        .catch((error) => {
+          console.log('请求出错:', error);
+          if (error.response && error.response.status === 400) {
+            // 这里可以根据具体的400错误情况进行更详细的处理
+            console.log('400错误:', error.response.data);
+          }
+        });
+    },
+
   }
 }
 </script>
@@ -182,5 +311,19 @@ export default {
 /deep/.el-table .el-table__cell{
   padding: 3px 0px;
 }
+
+.add {
+  margin-left: 450px;
+  color: #fff;
+  background-color: rgba(205, 110, 55, 0.853);
+  border-color: rgb(205, 110, 55,0.853);
+}
+.add:hover,
+.add:focus {
+  background: var(--el-button-hover-color);
+  border-color: var(--el-button-hover-color);
+  color: var(--el-button-font-color);
+}
+
 
 </style>
