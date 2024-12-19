@@ -2,14 +2,28 @@
 <template>
   <div style="height: 100%;">
     <div style="margin-bottom: 5px;margin-left: 5px; height: 6%">
-      <el-input type="text" autofocus="true" placeholder="请输流派类别名称" v-model="categoryName" class="input-with-select" style="width: 200px" suffix-icon="el-icon-search" clearable size="small" 
+      <el-cascader clearable filterable placeholder="请选择/输入刺绣流派编码"
+          size="small"
+          v-model="selectedOptions"
+          :options="casOptions"
+          :props="OptionProps" 
+          @change="handleCascaderChange" 
+          @blur="handleCascaderBlur(selectedOptions)" 
+          @visible-change="handleCascaderBlur(selectedOptions)"
+          style="margin-left: 5px;">
+      </el-cascader>
+
+      <el-input type="text" autofocus="true" placeholder="请输流派类别名称" v-model="categoryName" class="input-with-select" style="width: 200px;margin-left: 5px;" suffix-icon="el-icon-search" clearable size="small" 
       @keyup.enter.native="loadPostlistPageC1"></el-input>
 
-      <el-button type="primary" @click="loadPostlistPageC1" style="margin-left: 5px;" size="small">确定</el-button>
-      <el-button type="warning" @click="resetList" style="margin-left: 5px;" size="small">重置</el-button>
+      <el-button type="primary" @click="loadPostlistPageC1" icon="el-icon-check" style="margin-left: 5px;" size="small">确定</el-button>
+      <el-button type="warning" @click="resetList" style="margin-left: 5px;" size="small" icon="el-icon-refresh-left">重置</el-button>
+      <el-button class="refresh" icon="el-icon-refresh" @click="loadPostlistPageC1" style="margin-left: 5px;" size="small">刷新</el-button>
+
+      
 
       <el-button class="add" @click="addRecord" size="small">新增刺绣流派</el-button>
-      <el-button @click="clearFilter" size="small">清除所有过滤器</el-button>
+      <el-button class="clearallfilter" @click="clearFilter" size="small">清除所有过滤器</el-button>
     </div>
 
     <el-table
@@ -97,12 +111,12 @@
         <el-form :model="form1" style="overflow-y: auto; height: 50vh;width: 50vw;">
           <el-form-item label="刺绣流派类别编码" :label-width="formLabelWidth" required>
             <el-col :span="8">
-              <el-input v-model="form1.categoryId" autocomplete="true"></el-input>
+              <el-input v-model="form1.categoryId" :readonly="true" autocomplete="true"></el-input>
             </el-col>
           </el-form-item>
           <el-form-item label="刺绣流派类别名称" :label-width="formLabelWidth" required>
-            <el-col :span="8">
-              <el-input v-model="form1.categoryName"></el-input>
+            <el-col :span="8"> 
+              <el-input v-model="form1.categoryName" :readonly="true"></el-input>
             </el-col>
           </el-form-item>                    
           <el-form-item label="父节点编码" :label-width="formLabelWidth" required>
@@ -112,17 +126,17 @@
           </el-form-item>  
           <el-form-item label="祖先类别" :label-width="formLabelWidth" required>
             <el-col :span="8" required>
-             <el-input v-model="form1.ancester" ></el-input>
+             <el-input v-model="form1.ancester" :readonly="true"  ></el-input>
             </el-col>
           </el-form-item>  
           <el-form-item label="类别等级" :label-width="formLabelWidth">
             <el-col :span="8">
-             <el-input v-model="form1.level" ></el-input>
+             <el-input v-model="form1.level" :readonly="true"  ></el-input>
             </el-col>
           </el-form-item>
           <el-form-item label="是否为父类别标志" :label-width="formLabelWidth" required >
             <el-col :span="8">
-            <el-input v-model="form1.isparentflag" ></el-input>
+            <el-input v-model="form1.isparentflag" :readonly="true" ></el-input>
           </el-col>
           </el-form-item>
           <el-form-item label="简介" :label-width="formLabelWidth">
@@ -141,14 +155,24 @@
         <el-form :model="form2" style="overflow-y: auto; height: 50vh;width: 50vw;">
           <el-form-item label="刺绣流派类别编码" :label-width="formLabelWidth" required>
             <el-col :span="8">
-              <el-input v-model="form2.categoryId" autocomplete="true"></el-input>
+              <el-input v-model="form2.categoryId" autocomplete="true"  @blur="validateInput" ></el-input>
             </el-col>
           </el-form-item>
           <el-form-item label="刺绣流派类别名称" :label-width="formLabelWidth" required>
             <el-col :span="8">
               <el-input v-model="form2.categoryName"></el-input>
             </el-col>
-          </el-form-item>                    
+          </el-form-item>    
+          <el-form-item label="父节点编码" :label-width="formLabelWidth" required>
+            <el-cascader clearable filterable placeholder="请选择/输入父节点编码"
+              size="small"
+              v-model="form2.parentnodeId"
+              :options="casOptions"
+              :props="OptionProps"
+              @change="handleCascaderChange2" 
+              style="margin-left: 5px;">
+            </el-cascader>
+          </el-form-item>                  
           <el-form-item label="简介" :label-width="formLabelWidth">
           <el-col :span="20">
             <el-input v-model="form2.note" type="textarea" rows="3"></el-input>
@@ -174,6 +198,16 @@ export default {
     return {
       tableData: [],
       categoryName:'',
+      categoryId:'',
+      casOptions:[],
+      OptionProps: {
+        value:"categoryId",
+        label:"categoryId",
+        children:"children",
+        checkStrictly:true
+      },
+      selectedOptions:'',
+      Holename:'',
       dialogFormVisible1: false,
       dialogFormVisible2: false,
       form1: {
@@ -183,11 +217,12 @@ export default {
         parentnodeId: '',
         level: '',
         isparentflag: '',
-        ancestors: '',
+        ancester: '',
       },
       form2: {
         categoryId: '',
         categoryName: '',
+        parentnodeId: '',
         note: '',
       },
         formLabelWidth: '140px',
@@ -195,14 +230,29 @@ export default {
   },
   created() {
     this.loadPostlistPageC1();
+    this.loadGetCategory();
   },
   methods: {
-      filterHandler(value, row, column) {
-        console.log("filterHandler",value, row, column);
-        const property = column['property'];
-        console.log("property",property,row[property],row[property] === value);
-        return row[property] === value;
-      },
+    loadGetCategory(){
+      // http://localhost:8098/embroidery-category/listPageC2
+      this.$axios.get(this.$httpUrl+'/embroidery-category/listPageC2').then(res => res.data).then(res =>{
+        console.log("get",res.data);
+        if(res.code==200){
+          this.casOptions = res.data;
+        }
+        else{
+          alert('获取数据失败');
+        }
+        
+      })
+
+    },
+    filterHandler(value, row, column) {
+      console.log("filterHandler",value, row, column);
+      const property = column['property'];
+      console.log("property",property,row[property],row[property] === value);
+      return row[property] === value;
+    },
     filterLevel(value, row) {
         console.log("filterLevel",value, row,row.level,row.level=== value);
         return row.level === value;
@@ -218,7 +268,10 @@ export default {
       return row.categoryId;
     },
     loadPostlistPageC1() {
-        this.$axios.post(this.$httpUrl+'/embroidery-category/listPageC1',{categoryName:this.categoryName}).then(res => res.data).then(res =>{
+        this.$axios.post(this.$httpUrl+'/embroidery-category/listPageC1',{
+        categoryName:this.categoryName,
+        categoryId:this.categoryId,
+        }).then(res => res.data).then(res =>{
           console.log("post",res,res.data);
           if(res.code==200){
             this.tableData = res.data;
@@ -233,6 +286,7 @@ export default {
     resetList() {
       this.categoryName = '';
       this.loadPostlistPageC1();
+      this.loadGetCategory();
     },
     handleCurrentChange(val) {//选中一行
       console.log("handleCurrentChange",val);
@@ -243,6 +297,7 @@ export default {
         this.multipleSelection = val;
     },
     handleEdit(index, row) {
+      console.log("handleEdit",index, row);
       this.form1=row;
       this.dialogFormVisible1 = true;
       console.log(index, row);
@@ -258,6 +313,8 @@ export default {
           alert("删除失败，状态码不为200！")
         }
       })
+      this.loadPostlistPageC1();
+      this.loadGetCategory();
     },
     newSave1(){
       console.log('newSave1',this.form1);
@@ -278,31 +335,74 @@ export default {
             console.log('400错误:', error.response.data);
           }
         });
+        this.loadPostlistPageC1();
+        this.loadGetCategory();
     },
     addRecord(){
+        
         this.dialogFormVisible2 = true;
+    },
+    validateInput() {
+      const value = this.form2.categoryId.trim(); // 获取输入的值并去除首尾空格
+      console.log("validateInput", value);
+
+      // 使用正则表达式检查第一个字符是否是大写字母
+      const regex = /^[A-Z]/;
+
+      // 如果第一个字符不是大写字母，显示错误信息
+      if (!regex.test(value)) {
+        alert('输入内容必须以大写字母开头');
+      }
     },
     newSave2(){
       console.log('newSave2',this.form2);
         this.dialogFormVisible2 = false;
-        this.$axios.post(this.$httpUrl + '/embroidery-category/saveOrMod', this.form2).then(res => {
+        this.$axios.post(this.$httpUrl + '/embroidery-category/saveOrMod2', this.form2).then(res => {
         console.log(res);
         if (res.status == "200") {
-          alert("修改成功");
+          alert("新增成功");
           this.loadPostlistPageC1();
+          this.form2 = {
+            categoryId: '',
+            categoryName: '',
+            parentnodeId: '',
+            note: ''};
         } else {
-          alert("修改失败");
+          alert("新增失败");
         }
         })
         .catch((error) => {
           console.log('请求出错:', error);
+          alert('新增失败');
           if (error.response && error.response.status === 400) {
             // 这里可以根据具体的400错误情况进行更详细的处理
             console.log('400错误:', error.response.data);
           }
         });
+      this.loadPostlistPageC1();
+      this.loadGetCategory();    
     },
-
+    handleCascaderChange(values) {
+        // 使用 join 方法将数组中的元素用一个空格连接起来
+        console.log(values);
+         // 获取最后一个值
+        const lastValue = values[values.length - 1];
+        console.log('最后一个值:', lastValue);
+        this.categoryId = lastValue;
+      },
+      handleCascaderBlur(values) {
+        console.log('Cascader 失焦');
+        this.handleCascaderChange(values);
+        this.loadPostlistPageC1();
+      },
+      handleCascaderChange2(values) {
+        // 使用 join 方法将数组中的元素用一个空格连接起来
+        console.log(values);
+         // 获取最后一个值
+        const lastValue = values[values.length - 1];
+        console.log('最后一个值:', lastValue);
+        this.form2.parentnodeId = lastValue;
+      },
   }
 }
 </script>
@@ -313,7 +413,7 @@ export default {
 }
 
 .add {
-  margin-left: 450px;
+  margin-left: 125px;
   color: #fff;
   background-color: rgba(205, 110, 55, 0.853);
   border-color: rgb(205, 110, 55,0.853);
@@ -326,4 +426,30 @@ export default {
 }
 
 
+.clearallfilter {
+  margin-left: 5px;
+  color: #fff;
+  background-color: rgba(137, 205, 55, 0.853);
+  border-color: rgb(137, 205, 55, 0.853);
+}
+.clearallfilter:hover,
+.clearallfilter:focus {
+  background: var(--el-button-hover-color);
+  border-color: var(--el-button-hover-color);
+  color: var(--el-button-font-color);
+}
+
+
+.refresh {
+  margin-left: 5px;
+  color: #fff;
+  background-color: rgba(49, 199, 134, 0.853);
+  border-color: rgb(49, 199, 134, 0.853);
+}
+.refresh:hover,
+.refresh:focus {
+  background: var(--el-button-hover-color);
+  border-color: var(--el-button-hover-color);
+  color: var(--el-button-font-color);
+}
 </style>

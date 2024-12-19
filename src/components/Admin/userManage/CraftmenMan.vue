@@ -3,7 +3,7 @@
   <div style="height: 100%">
     <div style="margin-bottom: 5px;margin-left: 5px; height: 6%">
       <el-input type="text" autofocus="true" placeholder="请输入手工艺人姓名" v-model="name" class="input-with-select" style="width: 200px" suffix-icon="el-icon-search" clearable size="small" 
-      @keyup.enter.native="loadCraftmenPostlistPageC1"></el-input>
+      @keyup.enter.native="loadPostlistPageC1"></el-input>
 
       <el-cascader clearable filterable placeholder="请选择/输入地区"
           size="small"
@@ -16,9 +16,11 @@
           style="margin-left: 5px;">
       </el-cascader>
 
-      <el-button type="primary" @click="loadCraftmenPostlistPageC1" style="margin-left: 5px;" size="small">确定</el-button>
-      <el-button type="warning" @click="resetList" style="margin-left: 5px;" size="small">重置</el-button>
-      <el-button @click="clearFilter" size="small" style="margin-left: 550px;">清除所有过滤器</el-button>
+      <el-button type="primary" @click="loadPostlistPageC1" style="margin-left: 5px;" size="small" icon="el-icon-check">确定</el-button>
+      <el-button type="warning" @click="resetList" style="margin-left: 5px;" size="small" icon="el-icon-refresh-left">重置</el-button>
+      <el-button class="refresh" icon="el-icon-refresh" @click="loadPostlistPageC1" style="margin-left: 5px;" size="small">刷新</el-button>
+
+      <el-button class="clearallfilter" @click="clearFilter" size="small">清除所有过滤器</el-button>
 
       <!-- <el-button type="warning" @click="addRecord" style="margin-left: 5px;" size="small">新增</el-button> -->
     </div>
@@ -99,8 +101,13 @@
       </el-pagination>
     </div>
 
-      <el-dialog title="手工艺人详情" :visible.sync="dialogFormVisible" style="height: 95vh; overflow: hidden" width="55%" center  >
+      <el-dialog title="手工艺人详情" :visible.sync="dialogFormVisible" style="height: 95vh; overflow: hidden" width="53%" center  >
         <el-form :model="form" style="overflow-y: auto; height: 50vh;width: 50vw;">
+           <el-form-item label="手工艺人编码" :label-width="formLabelWidth" required>
+            <el-col :span="12">
+              <el-input v-model="form.craftsmanId" autocomplete="true"></el-input>
+            </el-col>
+          </el-form-item>
           <el-form-item label="手工艺人名称" :label-width="formLabelWidth" required>
             <el-col :span="12">
               <el-input v-model="form.craftsmanName" autocomplete="true"></el-input>
@@ -157,10 +164,11 @@
               </el-radio-group>
           </el-form-item>
           <el-form-item label="头像" :label-width="formLabelWidth">
-            <div class="list-img" style="width: 50px; height: 50px; margin: 0 auto">
+            <div class="list-img" style="width: 50px; height: 50px;">
+              
               <el-avatar 
                 v-if="form.images"
-                size="large" 
+                size="900" 
                 fit="fir" 
                 shape="square" 
                 :src="require('@/assets/photo/' + form.images + '.jpg')">
@@ -199,7 +207,7 @@ export default {
       pageSize: 10,
       total: 0,
       name: '',
-      areasOptions:'',
+      areasOptions:[],
       areasOptionProps: {
         value:"areaName",
         label:"areaName",
@@ -210,6 +218,7 @@ export default {
       areasHolename:'',
        dialogFormVisible: false,
         form: {
+          craftsmanId:'',
           craftsmanName: '',
           password: '',
           gender: '',
@@ -244,7 +253,7 @@ export default {
   props: {},
   created () {
     //this.loadCraftmenGetList();
-    this.loadCraftmenPostlistPageC1();
+    this.loadPostlistPageC1();
     this.loadAreasGetTree();
   },
   methods: {
@@ -260,7 +269,7 @@ export default {
         this.areasOptions = res;
       })
     },
-    loadCraftmenPostlistPageC1() {
+    loadPostlistPageC1() {
         this.$axios.post(this.$httpUrl+'/craftsmen/listPageC1',{
           "pageSize":this.pageSize,
           "pageNum":this.pageNum,
@@ -311,12 +320,12 @@ export default {
       console.log(index, row);
     },
     handleDelete(index, row) {
-      console.log(index, row,row.craftsmanId);
+      console.log(index, row,'row.craftsmanId',row.craftsmanId);
       this.$axios.get(this.$httpUrl+'/craftsmen/delete?craftsmanId='+row.craftsmanId,).then(res=>res.data).then(res=>{
         console.log(res);
         if(res.code=="200"){
           alert("删除成功");
-          this.loadCraftmenPostlistPageC1();
+          this.loadPostlistPageC1();
         }else{
           alert("状态码不为200！")
         }
@@ -326,18 +335,18 @@ export default {
       this.name = '';
       this.areasSelectedOptions = '';
       this.areasHolename = '';
-      this.loadCraftmenPostlistPageC1();
+      this.loadPostlistPageC1();
     },
     handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
         this.pageNum=1;
         this.pageSize = val;
-        this.loadCraftmenPostlistPageC1();
+        this.loadPostlistPageC1();
       },
       handleCurrentPageChange(val) {
         console.log(`当前页: ${val}`);    
         this.pageNum = val;
-        this.loadCraftmenPostlistPageC1();
+        this.loadPostlistPageC1();
       },
       handleCascaderChange(values) {
       // 使用 join 方法将数组中的元素用一个空格连接起来
@@ -351,7 +360,7 @@ export default {
       handleCascaderBlur(values) {
         console.log('Cascader 失焦');
         this.handleCascaderChange(values);
-        this.loadCraftmenPostlistPageC1();
+        this.loadPostlistPageC1();
       },
       addRecord(){
         this.dialogFormVisible = true;
@@ -363,12 +372,13 @@ export default {
         console.log(res);
         if (res.status == "200") {
           alert("修改成功");
-          this.loadCraftmenPostlistPageC1();
+          this.loadPostlistPageC1();
         } else {
           alert("修改失败");
         }
         })
         .catch((error) => {
+          alert("修改成功");
           console.log('请求出错:', error);
           if (error.response && error.response.status === 400) {
             // 这里可以根据具体的400错误情况进行更详细的处理
@@ -394,6 +404,34 @@ export default {
     width: 100%;
     text-align: left;
     background-color: #ffffff;
+}
+
+
+.clearallfilter {
+  margin-left: 240px;
+  color: #fff;
+  background-color: rgba(137, 205, 55, 0.853);
+  border-color: rgb(137, 205, 55, 0.853);
+}
+.clearallfilter:hover,
+.clearallfilter:focus {
+  background: var(--el-button-hover-color);
+  border-color: var(--el-button-hover-color);
+  color: var(--el-button-font-color);
+}
+
+
+.refresh {
+  margin-left: 5px;
+  color: #fff;
+  background-color: rgba(49, 199, 134, 0.853);
+  border-color: rgb(49, 199, 134, 0.853);
+}
+.refresh:hover,
+.refresh:focus {
+  background: var(--el-button-hover-color);
+  border-color: var(--el-button-hover-color);
+  color: var(--el-button-font-color);
 }
 
 </style>
