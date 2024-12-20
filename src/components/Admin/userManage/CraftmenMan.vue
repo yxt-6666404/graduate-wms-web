@@ -308,6 +308,7 @@ export default {
         this.multipleSelection = val;
     },
     filterHandler(value, row, column) {
+        console.log("filterHandler",value, row, column);
         const property = column['property'];
         return row[property] === value;
     },

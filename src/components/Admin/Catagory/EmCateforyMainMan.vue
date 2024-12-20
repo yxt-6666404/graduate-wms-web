@@ -78,6 +78,7 @@
 
       <el-table-column
         width="150" align="center" 
+        column-key="isparentflag"
         :filters="[{text: '是', value:1},{text:'否', value:0}]"  :filter-method="filteIsParentflag"
         prop="isparentflag"
         label="是否为父类别标志">
@@ -254,11 +255,24 @@ export default {
       return row[property] === value;
     },
     filterLevel(value, row) {
-        console.log("filterLevel",value, row,row.level,row.level=== value);
-        return row.level === value;
+      console.log("filterLevel",value, row);
+      // 如果当前行的 level 与给定值相等，直接返回 true
+      if (row.level === value) {
+          return true;
+      }
+      // 如果当前行有子节点（假设子节点数组是 row.children），则递归检查子节点
+      if (row.children && row.children.length > 0) {
+          // 对每个子节点递归调用 filterLevel
+          for (let child of row.children) {
+              if (this.filterLevel(value, child)) {
+                  return true; // 如果找到匹配的 level，返回 true
+              }
+          }
+      }
+      // 如果没有找到匹配的 level，返回 false
+      return false;
     },
     filteIsParentflag(value, row) {
-        console.log("filteIsParentflag",value, row,row.isparentflag === value);
         return row.isparentflag === value;
     },
     clearFilter() {
