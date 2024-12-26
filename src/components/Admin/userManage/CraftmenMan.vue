@@ -1,7 +1,7 @@
-<!--  -->
+<!-- crafman -->
 <template>
   <div style="height: 100%">
-    <div style="margin-bottom: 5px;margin-left: 5px; height: 6%">
+    <div style="margin-bottom: 5px;margin-left: 5px; height: 5%">
       <el-input type="text" autofocus="true" placeholder="请输入手工艺人姓名" v-model="name" class="input-with-select" style="width: 200px" suffix-icon="el-icon-search" clearable size="small" 
       @keyup.enter.native="loadPostlistPageC1"></el-input>
 
@@ -72,7 +72,7 @@
       <el-table-column prop="images" label="头像" width="100">
             <template slot-scope="scope">
               <div class="list-img">
-                <el-avatar size="large"  fit="fir" shape="square" :src="require('@/assets/photo/'+scope.row.images+'.jpg')"></el-avatar>
+                <el-avatar size="large"  fit="fir" shape="square" :src="require('@/assets/photo/craftmenimage/'+scope.row.images+'.jpg')"></el-avatar>
               </div>
             </template>
       </el-table-column>
@@ -168,17 +168,17 @@
               
               <el-avatar 
                 v-if="form.images"
-                size="900" 
+                size="large" 
                 fit="fir" 
                 shape="square" 
-                :src="require('@/assets/photo/' + form.images + '.jpg')">
+                :src="require('@/assets/photo/craftmenimage/' + form.images + '.jpg')">
               </el-avatar>
               <el-avatar 
                 v-else 
                 size="large" 
                 fit="fir" 
                 shape="square" 
-                :src="require('@/assets/photo/default.png')">
+                :src="require('@/assets/photo/default.jpg')">
               </el-avatar>
             </div>
           </el-form-item>
@@ -204,7 +204,7 @@ export default {
       currentRow: null,
       multipleSelection: [],
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 5,
       total: 0,
       name: '',
       areasOptions:[],
@@ -386,6 +386,7 @@ export default {
             console.log('400错误:', error.response.data);
           }
         });
+        this.loadPostlistPageC1();
     }
 
   },
@@ -409,7 +410,7 @@ export default {
 
 
 .clearallfilter {
-  margin-left: 240px;
+  margin-left: 28rem;
   color: #fff;
   background-color: rgba(137, 205, 55, 0.853);
   border-color: rgb(137, 205, 55, 0.853);

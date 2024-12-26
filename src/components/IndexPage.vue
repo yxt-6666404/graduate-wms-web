@@ -28,7 +28,7 @@ import AsidePage from './AsidePage.vue';
 import HeaderPage from './HeaderPage.vue';
 
 export default {
-    name: 'AdminIndexPage',
+    name: 'IndexPage',
     components: {
         AsidePage,
         HeaderPage,

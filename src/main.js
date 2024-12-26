@@ -12,17 +12,21 @@ import './assets/css/global.css'
 //引入axios
 import axios from 'axios';
 Vue.prototype.$axios = axios
-Vue.prototype.$httpUrl = 'http://localhost:8098'
+Vue.prototype.$httpUrl = 'http://localhost:8099'
 
 //引入路由
 import VueRouter from 'vue-router';
 import router from './router'
 Vue.use(VueRouter);
 
+//
+import store from './store'
+
 
 Vue.config.productionTip = false
 
 new Vue({
   router,
+  store,
   render: h => h(App),
 }).$mount('#app')

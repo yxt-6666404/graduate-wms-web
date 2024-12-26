@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div style="height: 100%">
-    <div style="margin-bottom: 5px;margin-left: 5px; height: 6%">
+    <div style="margin-bottom: 5px;margin-left: 5px; height: 5%">
       <el-input type="text" autofocus="true" placeholder="请输入店铺名称" v-model="name" class="input-with-select" style="width: 200px" suffix-icon="el-icon-search" clearable size="small" 
       @keyup.enter.native="loadPostlistPageC1"></el-input>
 
@@ -20,12 +20,12 @@
       <el-button type="warning" @click="resetList" style="margin-left: 5px;" size="small" icon="el-icon-refresh-left">重置</el-button>
       <el-button class="refresh" icon="el-icon-refresh" @click="loadPostlistPageC1" style="margin-left: 5px;" size="small">刷新</el-button>
 
-      <el-button class="clearallfilter" @click="clearFilter" size="small">清除所有过滤器</el-button>
+      <!-- <el-button class="clearallfilter" @click="clearFilter" size="small">清除所有过滤器</el-button> -->
 
       <!-- <el-button type="warning" @click="addRecord" style="margin-left: 5px;" size="small">新增</el-button> -->
     </div>
     
-    <el-table ref="multipleTable" :data="tableData" style="width: 100vw" height=460
+    <el-table ref="multipleTable" :data="tableData" style="width: 100vw" height=620
       highlight-current-row 
       :row-key="getRowKeys"
       :header-cell-style="{background:'#eef1f6',color:'#606266'}" 
@@ -121,7 +121,7 @@
                 size="large" 
                 fit="fir" 
                 shape="square" 
-                :src="require('@/assets/photo/default.png')">
+                :src="require('@/assets/photo/default.jpg')">
               </el-avatar>
             </div>
           </el-form-item>
@@ -150,14 +150,14 @@
 
 
 export default {
-  name: 'CraftmenMan',
+  name: 'ShopMan',
   data() {
     return {
       tableData:[],
       currentRow: null,
       multipleSelection: [],
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 5,
       total: 0,
       name: '',
       areasOptions:[],
@@ -245,7 +245,7 @@ export default {
       row.showPassword = !row.showPassword;
     },
     getRowKeys(row) {
-      return row.craftsmanId;
+      return row.shopId;
     },
     handleCurrentChange(val) {//选中一行
       console.log("handleCurrentChange",val);
@@ -341,6 +341,7 @@ export default {
             console.log('400错误:', error.response.data);
           }
         });
+        this.loadPostlistPageC1();
     }
 
   },
@@ -367,7 +368,7 @@ export default {
 
 
 .clearallfilter {
-  margin-left: 239px;
+  margin-left: 28rem;
   color: #fff;
   background-color: rgba(137, 205, 55, 0.853);
   border-color: rgb(137, 205, 55, 0.853);

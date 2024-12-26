@@ -1,13 +1,13 @@
-<!-- Admin首页 -->
+<!--dataanalysis  -->
 <template>
   <div>
-AdminSy
+aaaaa
   </div>
 </template>
 
 <script>
 export default {
-    name: 'AdminSy',
+    name: 'ShopDataAnlysisPage',
   data () {
     return {
     }

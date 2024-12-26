@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div style="height: 100%">
-    <div style="margin-bottom: 5px;margin-left: 5px; height: 6%">
+    <div style="margin-bottom: 5px;margin-left: 5px; height: 5%">
       <el-input type="text" autofocus="true" placeholder="请输入顾客姓名" v-model="name" class="input-with-select" style="width: 200px" suffix-icon="el-icon-search" clearable size="small" 
       @keyup.enter.native="loadPostlistPageC1"></el-input>
 
@@ -25,7 +25,7 @@
       <!-- <el-button type="warning" @click="addRecord" style="margin-left: 5px;" size="small">新增</el-button> -->
     </div>
     
-    <el-table ref="multipleTable" :data="tableData" style="width: 100vw" height=460
+    <el-table ref="multipleTable" :data="tableData" style="width: 100vw" height=620
       highlight-current-row 
       :row-key="getRowKeys"
       :header-cell-style="{background:'#eef1f6',color:'#606266'}" 
@@ -38,7 +38,8 @@
       <el-table-column prop="username" label="顾客姓名" width="120" fixed align="center">
       </el-table-column>
 
-      <el-table-column prop="gender" label="性别" width="50" align="center">
+      <el-table-column prop="gender" label="性别" width="60" align="center" 
+      :filters="[{text: '女', value: '女'}, {text: '男', value: '男'}]"  :filter-method="filterHandler">
       </el-table-column>
       
       <el-table-column prop="birthDate" label="出生日期" width="120" sortable align="center">
@@ -62,7 +63,7 @@
       <el-table-column prop="images" label="头像" width="100">
             <template slot-scope="scope">
               <div class="list-img">
-                <el-avatar size="large"  fit="fir" shape="square" :src="require('@/assets/photo/'+scope.row.images+'.jpg')"></el-avatar>
+                <el-avatar size="large"  fit="fir" shape="square" :src="require('@/assets/photo/customerimage/'+scope.row.images+'.jpg')"></el-avatar>
               </div>
             </template>
       </el-table-column>
@@ -148,14 +149,14 @@
                 size="900" 
                 fit="fir" 
                 shape="square" 
-                :src="require('@/assets/photo/' + form.images + '.jpg')">
+                :src="require('@/assets/photo/customerimage/' + form.images + '.jpg')">
               </el-avatar>
               <el-avatar 
                 v-else 
                 size="large" 
                 fit="fir" 
                 shape="square" 
-                :src="require('@/assets/photo/default.png')">
+                :src="require('@/assets/photo/default.jpg')">
               </el-avatar>
             </div>
           </el-form-item>
@@ -174,14 +175,14 @@
 
 
 export default {
-  name: 'CraftmenMan',
+  name: 'CustomerMan',
   data() {
     return {
       tableData:[],
       currentRow: null,
       multipleSelection: [],
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 5,
       total: 0,
       name: '',
       areasOptions:[],
@@ -270,7 +271,7 @@ export default {
       row.showPassword = !row.showPassword;
     },
     getRowKeys(row) {
-      return row.craftsmanId;
+      return row.customerId;
     },
     handleCurrentChange(val) {//选中一行
       console.log("handleCurrentChange",val);
@@ -358,7 +359,8 @@ export default {
             console.log('400错误:', error.response.data);
           }
         });
-    }
+        this.loadPostlistPageC1();
+      }
 
   },
   
@@ -381,7 +383,7 @@ export default {
 
 
 .clearallfilter {
-  margin-left: 239px;
+  margin-left: 28rem;
   color: #fff;
   background-color: rgba(137, 205, 55, 0.853);
   border-color: rgb(137, 205, 55, 0.853);
